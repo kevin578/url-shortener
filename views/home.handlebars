@@ -32,6 +32,9 @@
 
 <p>kevins-custom-links.herokuapp.com/{{usedLink}} is already being used. Please try a different link.<p>
 
+{{else if invalidLink}}
+
+<p>{{invalidLink}} is not a valid URL.</p>
 {{/if}}
 
 </div>

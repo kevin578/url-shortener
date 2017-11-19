@@ -3,7 +3,7 @@
 const express = require('express');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
-
+var validUrl = require('valid-url');
 var app = express();
 
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/shortenURL', {
@@ -46,6 +46,13 @@ app.post("/shortenURL", (req, res) => {
 
 //Checks if shortened URL already exists in the database. If if doesn't, it saves it to the DB.
   Link.findOne({ newURL:req.body.newURL }).then((link) => {
+
+    if (!validUrl.isUri(req.body.urlInput)){
+      return res.render('home', {
+        invalidLink: req.body.urlInput
+      })
+    }
+
     if(!link) {
     myData.save()
       .then(item => {
