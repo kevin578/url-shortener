@@ -1,23 +1,25 @@
+
+//basic setup
 const express = require('express');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 
-
-
 var app = express();
 
-mongoose.connect('mongodb://localhost:27017/shortenURL', {
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/shortenURL', {
   useMongoClient: true
 });
 
 mongoose.Promise = global.Promise;
 
+
+//body parsing for forms
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
 
-// Define schema
+//Create schema and model to link to
 var Schema = mongoose.Schema;
 
 var shortURL = new Schema({
@@ -25,31 +27,40 @@ var shortURL = new Schema({
   originalURL: String
 });
 
-// Compile model from schema
 var Link = mongoose.model('links', shortURL);
 
+//route for main page
+app.get('/', function(req, res) {
+  res.render('home');
+});
 
-
-
+//Post route for when form is submitted
 app.post("/shortenURL", (req, res) => {
 
-
+//New instance of Link schema with information from form
   myData = new Link({
     originalURL: req.body.urlInput,
     newURL: req.body.newURL
   });
 
+
+//Checks if shortened URL already exists in the database. If if doesn't, it saves it to the DB.
   Link.findOne({ newURL:req.body.newURL }).then((link) => {
     if(!link) {
     myData.save()
       .then(item => {
-        res.send("item saved to database");
+        res.render('home', {
+          oldLink: req.body.urlInput,
+          newLink: req.body.newURL
+        });
       })
       .catch(err => {
         res.status(400).send("unable to save to database");
       });
     } else {
-      res.send("URL already exists. Please choose another one.")
+      res.render('home', {
+        usedLink: req.body.newURL
+      })
     }
 
   })
@@ -57,14 +68,7 @@ app.post("/shortenURL", (req, res) => {
 
 });
 
-app.get('/urls', (req, res) => {
-  Link.find().then((links) => {
-    res.send({links});
-  }, (e) => {
-    res.status(400).send(e);
-  });
-});
-
+//Retrieves website from the database based on Querystring. Then redirects to the webpage.
 app.get('/:id', (req, res) => {
   var id = req.params.id;
 
@@ -78,6 +82,8 @@ app.get('/:id', (req, res) => {
   });
 });
 
+
+//sets up handlebars
 var handlebars = require('express-handlebars').create({
   defaultLayout: 'main',
   helpers: {
@@ -95,11 +101,9 @@ app.set('view engine', 'handlebars');
 app.use(express.static(__dirname + '/public'));
 
 
-app.set('port', process.env.PORT || 3000);
-app.get('/', function(req, res) {
-  res.render('home');
-});
+//Sets port and listens for call
 
+app.set('port', process.env.PORT || 3000);
 
 app.listen(app.get('port'), function() {
   console.log('Express started on http://localhost:' +

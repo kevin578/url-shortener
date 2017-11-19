@@ -1,15 +1,33 @@
-<h1>URL Shortener</h1>
+<div id = "header">
+<h1>simpleURL.click<h1>
 
+</div>
+<div id = 'main-container'>
 <form method = "post" action = "/shortenURL">
 
-<label>What URL would you like to shorten?</label>
+
+
+<label>Link to shorten:</label>
 
 <input type = 'text' name = "urlInput"><br>
 
-<label>What would like to call it?</label>
+<label>Whatd'ya wanna call it:</label>
 
 <input type = 'text' name = "newURL">
 
 <input type = 'submit' value = 'Shorten!'>
 
+
 </form>
+
+{{#if oldLink}}
+
+<p>Your can get to <a target = "_blank" href = {{oldLink}} >{{oldLink}}</a> by visting <a target = "_blank" href = {{newLink}}>localhost://3000/{{newLink}}</a>.</p>
+
+{{else if usedLink}}
+
+<p>localhost://3000/{{usedLink}} is already being used. Please try a different link.<p>
+
+{{/if}}
+
+</div>
