@@ -17,6 +17,6 @@
     "express": "^4.16.2",
     "express-handlebars": "^3.0.0",
     "handlebars": "^4.0.11",
-    "mongoose": "^4.12.5",
+    "mongoose": "^4.12.5"
   }
 }
