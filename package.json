@@ -9,7 +9,7 @@
   },
   "engines": {
     "node": "8.6.0"
-  }
+  },
   "author": "Kevin Briggs",
   "license": "ISC",
   "dependencies": {
